@@ -6,7 +6,7 @@
 /*   By: tfilipe- <tfilipe-@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 10:38:06 by tfilipe-          #+#    #+#             */
-/*   Updated: 2025/04/21 17:45:45 by tfilipe-         ###   ########.fr       */
+/*   Updated: 2025/04/22 00:31:59 by tfilipe-         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -52,12 +52,18 @@ char	*ft_strjoin(char *s1, char *s2)
 		free(s1);
 		return (NULL);
 	}
-	i = -1;
-	while (++i < len1)
+	i = 0;
+	while (i < len1)
+	{
 		newstring[i] = s1[i];
-	j = -1;
-	while (++j < len2)
+		i++;
+	}
+	j = 0;
+	while (j < len2)
+	{
 		newstring[i + j] = s2[j];
+		j++;
+	}
 	newstring[i + j] = '\0';
 	free(s1);
 	return (newstring);
@@ -92,6 +98,7 @@ char	*update_stash(char *stash)
 	char	*newstash;
 	int 	i;
 	int 	j;
+	int 	l;
 
 	i = 0;
 	if (!stash)
@@ -99,52 +106,70 @@ char	*update_stash(char *stash)
 	while (stash[i] && stash[i] != '\n')
 		i++;
 	if (stash[i] && stash[i] == '\n')
-		i++;
-	j = 0;
-	while (stash[i + j])
-		j++;
-	newstash = malloc(sizeof(char) * (j + 1));
+        i++;
+    if (!stash[i])
+    {
+        free(stash);
+        return (NULL);
+    }
+    j = 0;
+    while (stash[i + j])
+        j++;
+    newstash = malloc(sizeof(char) * (j + 1));
 	if (!newstash)
-		return (NULL);
-	j = 0;
-	while (stash[i + j])
 	{
-		newstash[j] = stash[i + j];
-		j++;
+		free(stash);
+		return (NULL);
 	}
-	newstash[j] = '\0';
+	l = 0;
+	while (l < j)
+	{
+		newstash[l] = stash[i + l];
+		l++;
+	}
+	newstash[l] = '\0';
 	free(stash);
 	return (newstash);
 }
 
-char	*get_next_line(int fd)
+static char	*read_into_stash(int fd, char *stash, char *buffer)
 {
-	static char *stash;
-	char 		*buffer;
-	char 		*line;
-	ssize_t 	bytes_read;
+	ssize_t	bytes_read;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!buffer)
-		return (NULL);
-	bytes_read = 0;
-	while (has_newline(stash) == 0)
+	bytes_read = 1;
+	while (!has_newline(stash) && bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read <= 0)
-			break;
+		if (bytes_read < 0)
+        {
+            free(stash);
+            return (NULL);
+        }
+        if (bytes_read == 0)
+            break;
 		buffer[bytes_read] = '\0';
 		stash = ft_strjoin(stash, buffer);
 		if (!stash)
-		{
-			free(buffer);
 			return (NULL);
-		}
 	}
+	return (stash);
+}
+
+
+char	*get_next_line(int fd)
+{
+	static char	*stash;
+	char		*buffer;
+	char		*line;
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
+		return (NULL);
+	stash = read_into_stash(fd, stash, buffer);
 	free(buffer);
-	if ((bytes_read == 0 && !stash) || (stash && *stash == '\0'))
+	if (stash == NULL || *stash == '\0')
 	{
 		free(stash);
 		stash = NULL;
@@ -152,30 +177,30 @@ char	*get_next_line(int fd)
 	}
 	line = extract_line(stash);
 	stash = update_stash(stash);
-	if (!line || *line == '\0')
-	{
-		free(line);
-		return (NULL);
-	}
 	return (line);
 }
 
+
 #include <fcntl.h>
-#include <sys/uio.h>
 #include <sys/types.h>
 
-int main()
-{
-	int fd = open("test.txt", O_RDONLY);
-	char *line;
-	while (1)
-	{
-		line = get_next_line(fd);
-		if (line)
-			free(line);
-		else
-			break;
-	}
-	close(fd);
-	return(0);
-}
+// int main(void) {
+//     char *line;
+//     int fd = -1; // Um valor inválido para fd
+
+//     // Teste com NULL (fd inválido)
+//     line = get_next_line(fd);
+//     printf("Resultado com NULL (fd inválido): %s\n", line);
+
+//     // Teste com arquivo inexistente
+//     fd = open("inexistente.txt", O_RDONLY);
+//     if (fd == -1) {
+//         printf("Arquivo inexistente não pode ser aberto\n");
+//     } else {
+//         line = get_next_line(fd);
+//         printf("Resultado com arquivo inexistente: %s\n", line);
+//         close(fd);
+//     }
+
+//     return 0;
+// }
