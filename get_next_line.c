@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
@@ -6,106 +6,176 @@
 /*   By: tfilipe- <tfilipe-@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 10:38:06 by tfilipe-          #+#    #+#             */
-/*   Updated: 2025/04/18 16:03:48 by tfilipe-         ###   ########.fr       */
+/*   Updated: 2025/04/21 17:45:45 by tfilipe-         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-// ft_strjoin: Junto duas strings (ex: stash + buffer)
+int	has_newline(char *stash)
+{
+	int i;
 
-// ft_strchr: vai procurar \n na stash
+	if (!stash)
+		return (0);
+	i = 0;
+	while (stash[i])
+	{
+		if (stash[i] == '\n')
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
-// ft_strdup: Copia uma string
 
-// ft_substr: Extrai parte da stash
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*newstring;
+	int		len1;
+	int		len2;
+	int		i;
+	int		j;
 
-// ft_strlen: Retorna tamanho da string
+	len1 = 0;
+	len2 = 0;
+	if (!s2)
+		return (NULL);
+	while (s1 && s1[len1])
+		len1++;
+	while (s2 && s2[len2])
+		len2++;
+	newstring = malloc(sizeof(char) * ((len1 + len2) + 1));
+	if (!newstring)
+	{
+		free(s1);
+		return (NULL);
+	}
+	i = -1;
+	while (++i < len1)
+		newstring[i] = s1[i];
+	j = -1;
+	while (++j < len2)
+		newstring[i + j] = s2[j];
+	newstring[i + j] = '\0';
+	free(s1);
+	return (newstring);
+}
+char	*extract_line(char *stash)
+{
+	char	*newline;
+	int 	i;
+	int 	j;
 
-// Alguma função para limpar e gerir a memória
-// (free, malloc, etc.)
-// (não esquecer de libertar a stash no final)
+	if (!stash || stash[0] == '\0')
+		return (NULL);
+	i = 0;
+	while (stash[i] && stash[i] != '\n')
+		i++;
+	if (stash[i] && stash[i] == '\n')
+		i++;
+	newline = malloc(sizeof(char) * (i + 1));
+	if (!newline)
+		return (NULL);
+	j = 0;
+	while (j < i)
+	{
+		newline[j] = stash[j];
+		j++;
+	}
+	newline[j] = '\0';
+	return (newline);
+}
+char	*update_stash(char *stash)
+{
+	char	*newstash;
+	int 	i;
+	int 	j;
 
+	i = 0;
+	if (!stash)
+		return (NULL);
+	while (stash[i] && stash[i] != '\n')
+		i++;
+	if (stash[i] && stash[i] == '\n')
+		i++;
+	j = 0;
+	while (stash[i + j])
+		j++;
+	newstash = malloc(sizeof(char) * (j + 1));
+	if (!newstash)
+		return (NULL);
+	j = 0;
+	while (stash[i + j])
+	{
+		newstash[j] = stash[i + j];
+		j++;
+	}
+	newstash[j] = '\0';
+	free(stash);
+	return (newstash);
+}
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
-	char 		buffer_to_read[BUFFER_SIZE + 1];
-	ssize_t 	buffersize;
-	ssize_t 	read_bytes;
+	static char *stash;
+	char 		*buffer;
+	char 		*line;
+	ssize_t 	bytes_read;
 
-	buffer = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffersize = BUFFER_SIZE;
-	read_bytes = 1;
-	//     declarar buffer temporário com tamanho BUFFER_SIZE
-	//     inicializar variável de controlo de leitura (bytes_lidos)
-	while (*buffer_to_read != '\n' && read_bytes != 0)
-	{
-		read_bytes = read(fd, buffer_to_read, buffersize);
-		// if (read_bytes < 0)
-		// {
-		// 	free(read_bytes);
-		// 	return (NULL);
-		// }
-		buffer_to_read[read_bytes] = '\0';
-		write(1, &buffer_to_read, read_bytes);
-	}
-
-//     enquanto '\n' não estiver no stash E bytes_lidos != 0
-//         bytes_lidos = ler do fd para o buffer
-//         se bytes_lidos < 0
-//             libertar memória, retornar NULL
-//         concatenar buffer ao stash
-	if (buffer == 0)
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
 		return (NULL);
-//     se stash está vazio
-//         retornar NULL
-
-//     encontrar índice do '\n' (ou fim da string se não existir)
-//     copiar do início até '\n' para uma nova string chamada "linha"
-    
-//     atualizar stash com o que sobrou depois do '\n'
-    
-//     retornar "linha"
+	bytes_read = 0;
+	while (has_newline(stash) == 0)
+	{
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read <= 0)
+			break;
+		buffer[bytes_read] = '\0';
+		stash = ft_strjoin(stash, buffer);
+		if (!stash)
+		{
+			free(buffer);
+			return (NULL);
+		}
+	}
+	free(buffer);
+	if ((bytes_read == 0 && !stash) || (stash && *stash == '\0'))
+	{
+		free(stash);
+		stash = NULL;
+		return (NULL);
+	}
+	line = extract_line(stash);
+	stash = update_stash(stash);
+	if (!line || *line == '\0')
+	{
+		free(line);
+		return (NULL);
+	}
+	return (line);
 }
 
 #include <fcntl.h>
+#include <sys/uio.h>
+#include <sys/types.h>
+
 int main()
 {
 	int fd = open("test.txt", O_RDONLY);
-	get_next_line(fd);
+	char *line;
+	while (1)
+	{
+		line = get_next_line(fd);
+		if (line)
+			free(line);
+		else
+			break;
+	}
 	close(fd);
-	fd = open("test.txt", O_RDONLY);
-	get_next_line(fd);
+	return(0);
 }
-// get_next_line: Lê uma linha de um arquivo (fd) e retorna-a como string
-// (incluindo o '\n' se existir).
-// A função lê o arquivo até encontrar um '\n' ou o fim do arquivo (EOF).
-// Se não houver mais linhas para ler, retorna NULL.
-
-// A função deve ser capaz de lidar com arquivos grandes e ler apenas o necessário
-// para retornar a linha. Isso significa que deve usar um buffer temporário para
-// ler os dados do arquivo em partes, em vez de ler tudo de uma vez. Isso é
-// importante para evitar o uso excessivo de memória, especialmente se o arquivo for
-// muito grande. A função deve ser capaz de lidar com arquivos de qualquer tamanho
-// e deve ser capaz de ler linhas de qualquer comprimento.
-// A função deve retornar uma nova string alocada na memória, que contém a linha
-// lida do arquivo. A string deve ser terminada em '\0' e deve incluir o '\n' se
-// existir. Se não houver mais linhas para ler, a função deve retornar NULL. A
-// função deve garantir que a memória alocada para a string seja liberada corretamente
-
-// após o uso. Isso significa que deve usar funções de alocação de memória como
-// malloc e free corretamente. A função deve garantir que a memória alocada para
-// a string seja liberada corretamente após o uso. Isso significa que deve usar
-// funções de alocação de memória como malloc e free corretamente. A função deve
-// garantir que a memória alocada para a string seja liberada corretamente após o uso.
-
-
-// para evitar desperdício de memória. A função deve ser eficiente e não deve
-//causar vazamentos de memória.
-
-// USAR LINKED LISTS, PORQUE A LOGICA DE LINKED LISTS PARA ESTE PROJETO, VAI 
-// AUXILIAR NOS PROJETOS FUTUROS.
-// VAMOS TENTAR, EM VEZ DE USAR ARRAYS.
