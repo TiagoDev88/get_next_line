@@ -15,19 +15,19 @@
 static char	*read_into_stash(int fd, char *stash, char *buffer)
 {
 	ssize_t	bytes_read;
-	char 	*tmp;
-	
+	char	*tmp;
+
 	bytes_read = 1;
-	while (!has_newline(stash) && bytes_read > 0)
+	while (has_newline(stash) == 0 && bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
-        {
-            free(stash);
-            return (NULL);
-        }
-        if (bytes_read == 0)
-            break;
+		{
+			free(stash);
+			return (NULL);
+		}
+		if (bytes_read == 0)
+			break ;
 		buffer[bytes_read] = '\0';
 		tmp = ft_strjoin(stash, buffer);
 		if (!tmp)
@@ -40,7 +40,6 @@ static char	*read_into_stash(int fd, char *stash, char *buffer)
 	}
 	return (stash);
 }
-
 
 char	*get_next_line(int fd)
 {
@@ -55,32 +54,48 @@ char	*get_next_line(int fd)
 		return (NULL);
 	stash[fd] = read_into_stash(fd, stash[fd], buffer);
 	free(buffer);
-	if (stash[fd] == NULL || stash[fd][0] == '\0')
-	{
-		free(stash[fd]);
-		stash[fd] = NULL;
-		return (NULL);
-	}
 	line = extract_line(stash[fd]);
 	stash[fd] = update_stash(stash[fd]);
 	return (line);
 }
 
-
 // #include <fcntl.h>
-// #include <sys/types.h>
 // #include <stdio.h>
 
-// int main(void) {
-//     char *line;
-//     int fd ; 
-// 	fd = open("test.txt", O_RDONLY);
+// int main(void)
+// {
+//     int fd1 = open("file1.txt", O_RDONLY);
+//     int fd2 = open("file2.txt", O_RDONLY);
+//     char *line1 = NULL;
+//     char *line2 = NULL;
 
-// 	while(line = get_next_line(fd))
-// 	{
-// 		printf("%s", line);
-// 		free(line);
-// 	}
-// 	close(fd);
-// 	return 0;
+//     if (fd1 < 0 || fd2 < 0)
+//     {
+//         perror("Error opening files");
+//         return 1;
+//     }
+
+//     while (1)
+//     {
+//         line1 = get_next_line(fd1);
+//         if (line1)
+//         {
+//             printf("file1: %s", line1);
+//             free(line1);
+//         }
+
+//         line2 = get_next_line(fd2);
+//         if (line2)
+//         {
+//             printf("file2: %s", line2);
+//             free(line2);
+//         }
+
+//         if (!line1 && !line2)
+//             break;
+//     }
+
+//     close(fd1);
+//     close(fd2);
+//     return 0;
 // }

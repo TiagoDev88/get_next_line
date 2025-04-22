@@ -48,24 +48,23 @@ char	*ft_strjoin(char *s1, char *s2)
 	int		i;
 	int		j;
 
+	if (!s1 && !s2)
+		return (NULL);
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
 	newstring = malloc(sizeof(char) * ((len1 + len2) + 1));
 	if (!newstring)
 		return (NULL);
 	i = 0;
-	while (i < len1)
+	while (s1 && s1[i])
 	{
 		newstring[i] = s1[i];
 		i++;
 	}
 	j = 0;
-	while (j < len2)
-	{
-		newstring[i + j] = s2[j];
-		j++;
-	}
-	newstring[i + j] = '\0';
+	while (s2 && s2[j])
+		newstring[i++] = s2[j++];
+	newstring[i] = '\0';
 	return (newstring);
 }
 
@@ -100,36 +99,26 @@ char	*update_stash(char *stash)
 	char	*newstash;
 	int		i;
 	int		j;
-	int		l;
 
-	i = 0;
 	if (!stash)
 		return (NULL);
+	i = 0;
 	while (stash[i] && stash[i] != '\n')
 		i++;
 	if (stash[i] && stash[i] == '\n')
 		i++;
-    if (!stash[i])
+	if (!stash[i])
 	{
 		free(stash);
 		return (NULL);
 	}
-    j = 0;
-    while (stash[i + j])
-        j++;
-    newstash = malloc(sizeof(char) * (j + 1));
+	newstash = malloc(ft_strlen(stash) - i + 1);
 	if (!newstash)
-	{
-		free(stash);
 		return (NULL);
-	}
-	l = 0;
-	while (l < j)
-	{
-		newstash[l] = stash[i + l];
-		l++;
-	}
-	newstash[l] = '\0';
+	j = 0;
+	while (stash[i])
+		newstash[j++] = stash[i++];
+	newstash[j] = '\0';
 	free(stash);
 	return (newstash);
 }

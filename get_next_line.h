@@ -21,9 +21,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-int 	ft_strlen(char *s);
-int 	has_newline(char *stash);
-int		get_new_start_index(char *stash);
+int		ft_strlen(char *s);
+int		has_newline(char *stash);
 char	*get_next_line(int fd);
 char	*ft_strjoin(char *s1, char *s2);
 char	*extract_line(char *stash);

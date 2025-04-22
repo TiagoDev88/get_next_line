@@ -15,19 +15,19 @@
 static char	*read_into_stash(int fd, char *stash, char *buffer)
 {
 	ssize_t	bytes_read;
-	char 	*tmp;
-	
+	char	*tmp;
+
 	bytes_read = 1;
 	while (has_newline(stash) == 0 && bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
-        {
-            free(stash);
-            return (NULL);
-        }
-        if (bytes_read == 0)
-            break;
+		{
+			free(stash);
+			return (NULL);
+		}
+		if (bytes_read == 0)
+			break ;
 		buffer[bytes_read] = '\0';
 		tmp = ft_strjoin(stash, buffer);
 		if (!tmp)
@@ -40,7 +40,6 @@ static char	*read_into_stash(int fd, char *stash, char *buffer)
 	}
 	return (stash);
 }
-
 
 char	*get_next_line(int fd)
 {
@@ -55,32 +54,27 @@ char	*get_next_line(int fd)
 		return (NULL);
 	stash = read_into_stash(fd, stash, buffer);
 	free(buffer);
-	if (stash == NULL || stash[0] == '\0')
-	{
-		free(stash);
-		stash = NULL;
-		return (NULL);
-	}
 	line = extract_line(stash);
 	stash = update_stash(stash);
 	return (line);
 }
 
-
 // #include <fcntl.h>
-// #include <sys/types.h>
 // #include <stdio.h>
 
 // int main(void) {
-//     char *line;
-//     int fd ; 
-// 	fd = open("test.txt", O_RDONLY);
+//     int fd = open("test.txt", O_RDONLY);
+//     if (fd < 0) {
+//         perror("Error opening file");
+//         return (-1);
+//     }
 
-// 	while(line = get_next_line(fd))
-// 	{
-// 		printf("%s", line);
-// 		free(line);
-// 	}
-// 	close(fd);
-// 	return 0;
+//     char *line;
+//     while ((line = get_next_line(fd)) != NULL) {
+//         printf("%s", line);
+//         free(line);
+//     }
+
+//     close(fd);
+//     return (0);
 // }
