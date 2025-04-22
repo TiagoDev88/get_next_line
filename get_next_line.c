@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-static char	*read_into_stash(int fd, char *stash, char *buffer)
+char	*read_into_stash(int fd, char *stash, char *buffer)
 {
 	ssize_t	bytes_read;
 	char	*tmp;
@@ -49,12 +49,20 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer = malloc(BUFFER_SIZE + 1);
+	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	if (!buffer)
 		return (NULL);
 	stash = read_into_stash(fd, stash, buffer);
 	free(buffer);
+	if (!stash)
+		return (NULL);
 	line = extract_line(stash);
+	if (!line)
+	{
+		free(stash);
+		stash = NULL;
+		return (NULL);
+	}
 	stash = update_stash(stash);
 	return (line);
 }

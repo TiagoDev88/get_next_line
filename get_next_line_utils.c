@@ -79,7 +79,7 @@ char	*extract_line(char *stash)
 	i = 0;
 	while (stash[i] && stash[i] != '\n')
 		i++;
-	if (stash[i] && stash[i] == '\n')
+	if (stash[i] == '\n')
 		i++;
 	newline = malloc(sizeof(char) * (i + 1));
 	if (!newline)
@@ -105,14 +105,14 @@ char	*update_stash(char *stash)
 	i = 0;
 	while (stash[i] && stash[i] != '\n')
 		i++;
-	if (stash[i] && stash[i] == '\n')
+	if (stash[i] == '\n')
 		i++;
-	if (!stash[i])
+	if (stash[i] == '\0')
 	{
 		free(stash);
 		return (NULL);
 	}
-	newstash = malloc(ft_strlen(stash) - i + 1);
+	newstash = malloc((ft_strlen(stash) - i) + 1);
 	if (!newstash)
 		return (NULL);
 	j = 0;

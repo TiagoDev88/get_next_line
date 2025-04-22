@@ -12,7 +12,7 @@
 
 #include "get_next_line_bonus.h"
 
-static char	*read_into_stash(int fd, char *stash, char *buffer)
+char	*read_into_stash(int fd, char *stash, char *buffer)
 {
 	ssize_t	bytes_read;
 	char	*tmp;
@@ -54,7 +54,15 @@ char	*get_next_line(int fd)
 		return (NULL);
 	stash[fd] = read_into_stash(fd, stash[fd], buffer);
 	free(buffer);
+	if (!stash[fd])
+		return (NULL);
 	line = extract_line(stash[fd]);
+	if (!line)
+	{
+		free(stash[fd]);
+		stash[fd] = NULL;
+		return (NULL);
+	}
 	stash[fd] = update_stash(stash[fd]);
 	return (line);
 }
