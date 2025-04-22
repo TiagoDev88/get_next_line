@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfilipe- <tfilipe-@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 10:38:06 by tfilipe-          #+#    #+#             */
-/*   Updated: 2025/04/22 17:24:45 by tfilipe-         ###   ########.fr       */
+/*   Updated: 2025/04/22 16:38:39 by tfilipe-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static char	*read_into_stash(int fd, char *stash, char *buffer)
 {
@@ -18,7 +18,7 @@ static char	*read_into_stash(int fd, char *stash, char *buffer)
 	char 	*tmp;
 	
 	bytes_read = 1;
-	while (has_newline(stash) == 0 && bytes_read > 0)
+	while (!has_newline(stash) && bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
@@ -44,7 +44,7 @@ static char	*read_into_stash(int fd, char *stash, char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
+	static char	*stash[MAX_FD];
 	char		*buffer;
 	char		*line;
 
@@ -53,16 +53,16 @@ char	*get_next_line(int fd)
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
 		return (NULL);
-	stash = read_into_stash(fd, stash, buffer);
+	stash[fd] = read_into_stash(fd, stash[fd], buffer);
 	free(buffer);
-	if (stash == NULL || stash[0] == '\0')
+	if (stash[fd] == NULL || stash[fd][0] == '\0')
 	{
-		free(stash);
-		stash = NULL;
+		free(stash[fd]);
+		stash[fd] = NULL;
 		return (NULL);
 	}
-	line = extract_line(stash);
-	stash = update_stash(stash);
+	line = extract_line(stash[fd]);
+	stash[fd] = update_stash(stash[fd]);
 	return (line);
 }
 
