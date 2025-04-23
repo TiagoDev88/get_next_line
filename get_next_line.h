@@ -6,7 +6,7 @@
 /*   By: tfilipe- <tfilipe-@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 10:39:03 by tfilipe-          #+#    #+#             */
-/*   Updated: 2025/04/22 17:15:18 by tfilipe-         ###   ########.fr       */
+/*   Updated: 2025/04/23 11:33:29 by tfilipe-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,6 @@ char	*get_next_line(int fd);
 char	*ft_strjoin(char *s1, char *s2);
 char	*extract_line(char *stash);
 char	*update_stash(char *stash);
-char	*read_into_stash(int fd, char *stash, char *buffer);
+
 
 #endif

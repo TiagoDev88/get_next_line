@@ -6,13 +6,13 @@
 /*   By: tfilipe- <tfilipe-@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 10:38:06 by tfilipe-          #+#    #+#             */
-/*   Updated: 2025/04/22 17:24:45 by tfilipe-         ###   ########.fr       */
+/*   Updated: 2025/04/23 11:37:10 by tfilipe-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*read_into_stash(int fd, char *stash, char *buffer)
+static char	*read_into_stash(int fd, char *stash, char *buffer)
 {
 	ssize_t	bytes_read;
 	char	*tmp;
@@ -72,13 +72,10 @@ char	*get_next_line(int fd)
 
 // int main(void) {
 //     int fd = open("test.txt", O_RDONLY);
-//     if (fd < 0) {
-//         perror("Error opening file");
-//         return (-1);
-//     }
 
 //     char *line;
-//     while ((line = get_next_line(fd)) != NULL) {
+//     while ((line = get_next_line(fd)) != NULL) 
+// 	{
 //         printf("%s", line);
 //         free(line);
 //     }
