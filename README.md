@@ -108,7 +108,7 @@ Returns NULL at EOF or on error
 
 One line is returned per call to get_next_line
 
-**👤 Author**
+## **👤 Author**
 Tiago Filipe
 
 42 login: tfilipe-
