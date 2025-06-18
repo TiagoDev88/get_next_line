@@ -1,6 +1,8 @@
-<h1 align="center">
-	📄 get_next_line
-</h1>
+<h2 align="center">
+
+[![GET_NEXT_LINE](https://github.com/TiagoDev88/42-project-badges/blob/main/badges/get_next_linem.png)](https://github.com/TiagoDev88/get_next_line) 
+	
+</h2>
 
 <p align="center">
 	<b><i>Read a file line by line, like a pro.</i></b><br>
